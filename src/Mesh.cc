@@ -153,12 +153,20 @@ namespace zenkit {
 			    case MeshChunkType::LIGHTMAPS_SHARED: {
 				    auto texture_count = c->read_uint();
 
-				    std::vector<std::shared_ptr<Texture>> lightmap_textures {};
+					std::vector<std::shared_ptr<Texture>> lightmap_textures_parsed {};
+				    lightmap_textures_parsed.resize(texture_count);
 				    lightmap_textures.resize(texture_count);
 
 				    for (std::uint32_t i = 0; i < texture_count; ++i) {
-					    lightmap_textures[i] = std::make_shared<Texture>();
-					    lightmap_textures[i]->load(c);
+					    uint32_t start = c->tell();
+					    lightmap_textures_parsed[i] = std::make_shared<Texture>();
+					    lightmap_textures_parsed[i]->load(c);
+					    uint32_t end = c->tell();
+					    uint32_t texRawSize = end - start;
+					    auto& texRawTarget = lightmap_textures[i];
+					    texRawTarget.resize(texRawSize);
+						c->seek(start, Whence::BEG);
+					    c->read(texRawTarget.data(), texRawSize);
 				    }
 
 				    auto lightmap_count = c->read_uint();
@@ -169,12 +177,14 @@ namespace zenkit {
 					    std::uint32_t texture_index = c->read_uint();
 
 					    this->lightmaps.emplace_back(
-					        LightMap {lightmap_textures[texture_index], {normal_a, normal_b}, origin});
+					        LightMap {lightmap_textures_parsed[texture_index], texture_index, {normal_a, normal_b}, origin});
 				    }
 
 				    break;
 			    }
 			    case MeshChunkType::LIGHTMAPS: {
+					// TODO what even is this? how could a lightmap NOT be shared?
+
 				    auto lightmap_count = c->read_uint();
 
 				    for (std::uint32_t i = 0; i < lightmap_count; ++i) {
@@ -185,9 +195,9 @@ namespace zenkit {
 					    Texture lightmap_texture {};
 					    lightmap_texture.load(c);
 
-					    this->lightmaps.emplace_back(LightMap {std::make_shared<Texture>(std::move(lightmap_texture)),
-					                                           {normal_a, normal_b},
-					                                           origin});
+					    //this->lightmaps.emplace_back(LightMap {std::make_shared<Texture>(std::move(lightmap_texture)),
+					    //                                       {normal_a, normal_b},
+					    //                                       origin});
 				    }
 
 				    break;
