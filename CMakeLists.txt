@@ -109,7 +109,7 @@ if (ZK_ENABLE_FUTURE)
 endif ()
 
 include(support/BuildSupport.cmake)
-bs_select_cflags(${ZK_ENABLE_ASAN} _ZK_COMPILE_FLAGS _ZK_LINK_FLAGS)
+# bs_select_cflags(${ZK_ENABLE_ASAN} _ZK_COMPILE_FLAGS _ZK_LINK_FLAGS)
 bs_check_posix_mmap(_ZK_HAS_MMAP_POSIX)
 bs_check_win32_mmap(_ZK_HAS_MMAP_WIN32)
 
