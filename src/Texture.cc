@@ -410,4 +410,32 @@ namespace zenkit {
 
 		return tex;
 	}
+
+	void seekTextureEnd(Read* r) {
+		if (r->read_string(4) != ZTEX_SIGNATURE) {
+			throw ParserError {"texture", "invalid signature"};
+		}
+
+		if (r->read_uint() != 0) {
+			throw ParserError {"texture", "invalid version"};
+		}
+
+		TextureFormat format = static_cast<TextureFormat>(r->read_uint());
+		std::uint32_t width = r->read_uint();
+		std::uint32_t height = r->read_uint();
+		std::uint32_t mipmap_count = std::max(1u, r->read_uint());
+		std::uint32_t reference_width = r->read_uint();
+		std::uint32_t reference_height = r->read_uint();
+		std::uint32_t average_color = r->read_uint();
+
+		if (format == TextureFormat::P8) {
+			std::uint32_t palette_size = ZTEX_PALETTE_ENTRIES * 4;
+			r->seek(palette_size, Whence::CUR);
+		}
+
+		for (std::int32_t level = mipmap_count - 1; level >= 0; --level) {
+			auto mip_size = _ztex_mipmap_size(format, width, height, level);
+			r->seek(mip_size, Whence::CUR);
+		}
+	}
 } // namespace zenkit

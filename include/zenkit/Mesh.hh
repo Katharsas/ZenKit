@@ -24,7 +24,6 @@ namespace zenkit {
 
 	/// \brief Represents a light map.
 	struct LightMap {
-		std::shared_ptr<Texture> image;
 		uint32_t texture_index;
 		glm::vec3 normals[2];
 		glm::vec3 origin;
@@ -162,7 +161,7 @@ namespace zenkit {
 		std::vector<LightMap> lightmaps {};
 
 		/// \brief Shared lightmap texture data.
-		std::vector<std::vector<uint8_t>> lightmap_textures {};
+		std::vector<std::shared_ptr<std::vector<uint8_t>>> lightmap_textures {};
 
 		std::vector<Polygon> geometry {};
 		std::vector<uint32_t> polygon_vertex_indices;

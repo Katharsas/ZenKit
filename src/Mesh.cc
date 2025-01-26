@@ -153,20 +153,17 @@ namespace zenkit {
 			    case MeshChunkType::LIGHTMAPS_SHARED: {
 				    auto texture_count = c->read_uint();
 
-					std::vector<std::shared_ptr<Texture>> lightmap_textures_parsed {};
-				    lightmap_textures_parsed.resize(texture_count);
-				    lightmap_textures.resize(texture_count);
+				    std::uint32_t current_size = lightmap_textures.size();
 
 				    for (std::uint32_t i = 0; i < texture_count; ++i) {
-					    uint32_t start = c->tell();
-					    lightmap_textures_parsed[i] = std::make_shared<Texture>();
-					    lightmap_textures_parsed[i]->load(c);
-					    uint32_t end = c->tell();
-					    uint32_t texRawSize = end - start;
-					    auto& texRawTarget = lightmap_textures[i];
-					    texRawTarget.resize(texRawSize);
-						c->seek(start, Whence::BEG);
-					    c->read(texRawTarget.data(), texRawSize);
+					    size_t start = c->tell();
+					    seekTextureEnd(c);
+					    size_t end = c->tell();
+					    size_t size = end - start;
+					    auto texture = std::make_shared<std::vector<uint8_t>>(size);
+					    c->seek(start, Whence::BEG);
+					    c->read(texture->data(), size);
+						lightmap_textures.push_back(texture);
 				    }
 
 				    auto lightmap_count = c->read_uint();
@@ -175,9 +172,10 @@ namespace zenkit {
 					    auto normal_a = c->read_vec3();
 					    auto normal_b = c->read_vec3();
 					    std::uint32_t texture_index = c->read_uint();
+						// we assume that texture_index is relative to the lightmaps in this chunk
 
 					    this->lightmaps.emplace_back(
-					        LightMap {lightmap_textures_parsed[texture_index], texture_index, {normal_a, normal_b}, origin});
+					        LightMap {current_size + texture_index, {normal_a, normal_b}, origin});
 				    }
 
 				    break;
