@@ -164,4 +164,6 @@ namespace zenkit {
 		std::uint32_t _m_height;
 		std::vector<std::pair<std::vector<uint8_t>, TextureFormat>> _m_mipmaps;
 	};
+
+	void seekTextureEnd(Read* r);
 } // namespace zenkit
