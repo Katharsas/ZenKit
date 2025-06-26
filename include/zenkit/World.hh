@@ -75,7 +75,7 @@ namespace zenkit {
 		[[nodiscard]] ZKREM("use ::load()") ZKAPI static World parse(phoenix::buffer&& buf, GameVersion version);
 		[[nodiscard]] ZKREM("use ::load()") ZKAPI static World parse(phoenix::buffer&& buf);
 
-		ZKAPI void load(Read* r);
+		ZKAPI GameVersion load(Read* r);
 		ZKAPI void load(Read* r, GameVersion version);
 
 		ZKAPI void load(ReadArchive& r, GameVersion version) override;
