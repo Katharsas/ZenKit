@@ -140,7 +140,7 @@ target_include_directories(zenkit PUBLIC include)
 target_compile_definitions(zenkit PRIVATE _ZKEXPORT=1 ZKNO_REM=1)
 target_compile_options(zenkit PRIVATE ${_ZK_COMPILE_FLAGS})
 target_link_options(zenkit PUBLIC ${_ZK_LINK_FLAGS})
-target_link_libraries(zenkit PUBLIC glm::glm_static squish)
+target_link_libraries(zenkit PUBLIC glm::glm squish)
 set_target_properties(zenkit PROPERTIES DEBUG_POSTFIX "d" VERSION ${PROJECT_VERSION})
 
 if (ZK_ENABLE_INSTALL)
@@ -152,7 +152,7 @@ if (ZK_ENABLE_INSTALL)
         # For static linking we'll need to provide the dependency static libraries
         install(DIRECTORY "${glm_SOURCE_DIR}/glm" TYPE INCLUDE FILES_MATCHING PATTERN "*.hpp" PATTERN "*.inl" PATTERN "*.h")
 
-        foreach (lib glm::glm_static)
+        foreach (lib glm::glm)
             install(FILES "$<TARGET_LINKER_FILE:${lib}>" TYPE LIB)
         endforeach ()
     endif ()
